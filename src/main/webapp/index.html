@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>XmlHttpRequest</title>
+</head>
+<body>
+<h1>XMLHttpRequest + ES6 + Spring Boot + Aop + XSS</h1>
+<p>包含跨站脚本攻击（后台进行过滤）</p>
+<button onclick="getData()">getData</button>
+<button onclick="postData()">postData</button>
+<button onclick="postJSON()">postJSON</button>
+文件：<input type="file" name="file">
+长传进度：<span></span>
+<button onclick="postFormData()">postFormData</button>
+<hr>
+<p>参数为对象发起ajax</p>
+<button onclick="getDataByObject()">getData</button>
+<button onclick="postDataByObject()">postData</button>
+<button onclick="postJSONByObject()">postJSON</button>
+文件：<input type="file" name="file">
+长传进度：<span></span>
+<button onclick="postFormDataByObject()">postFormData</button>
+<script src="Ajax.js"></script>
+<script>
+    function getData(){
+        Ajax.getData("http://localhost:8080/get", {
+            name: "<script>alert('ajax')<"+"/script>",
+            sex: "男"
+        }).then(data =>{
+            console.log(data);
+    })
+    }
+    function postData(){
+        Ajax.postData("http://localhost:8080/postData", {
+            name: "wind",
+            hobby: ["dancing", "<>painting</>"]
+        }).then(data =>{
+            console.log(data);
+    });
+    }
+    function postJSON(){
+        Ajax.postJSON("http://localhost:8080/postJSON", {
+            name: "wind",
+            like: ["dancing", "painting"],
+            skill: {
+                frontEnd: "javascript",
+                backEnd: "backEnd"
+            }
+        }).then(data =>{
+            console.log(data);
+    });
+    }
+    function postFormData(){
+        let formData = new FormData();
+        formData.append("name", "wind");
+        formData.append("file", document.querySelector("input[type=file]").files[0]);
+        Ajax.postFormData(
+            "http://localhost:8080/postFormData",
+            formData,
+            function(event){
+                let span = document.getElementsByTagName("span")[0];
+                span.innerHTML = Math.ceil(event.loaded / event.total * 100) + "%";
+            }
+        ).then(data => {
+            console.log(data);
+    });
+    }
+    function getDataByObject(){
+        Ajax.request({
+            method: "get",
+            url: "http://localhost:8080/get",
+            data: {
+                name: "wind",
+                sex: "男"
+            },
+            timeout: 1000,
+            ontimeout(){
+                alert("网速太慢了");
+            },
+        }).then(data => {
+            console.log(data);
+    });
+    }
+    function postDataByObject(){
+        Ajax.request({
+            method: "post",
+            url: "http://localhost:8080/postData",
+            data: {
+                name: "wind",
+                hobby: ["dancing", "<>painting</>"]
+            }
+        }).then(data => {
+            console.log(data);
+    });
+    }
+    function postJSONByObject(){
+        Ajax.request({
+            method: "post",
+            url: "http://localhost:8080/postJSONByObject",
+            data: [{
+                frontEnd: "javascript",
+                backEnd: "backEnd"
+            }, {
+                frontEnd: "javascript",
+                backEnd: "backEnd"
+            }],
+            ContentType: "application/json",
+        }).then(data => {
+            console.log(data);
+    });
+    }
+    function postFormDataByObject(){
+        let formData = new FormData();
+        formData.append("name", "wind");
+        formData.append("file", document.querySelectorAll("input[type=file]")[1].files[0]);
+        Ajax.request({
+            method: "post",
+            url: "http://localhost:8080/postFormData",
+            data: formData,
+            progress: true,
+            onprogress(event){
+                let span = document.getElementsByTagName("span")[1];
+                span.innerHTML = Math.ceil(event.loaded / event.total * 100) + "%";
+            },
+        }).then(data => {
+            console.log(data);
+    });
+    }
+</script>
+</body>
+</html>
