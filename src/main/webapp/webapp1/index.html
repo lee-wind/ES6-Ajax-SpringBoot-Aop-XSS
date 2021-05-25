@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Android Webview</title>
+    <style>
+        body{
+            background: pink;
+        }
+    </style>
+</head>
+<body>
+<h1>WebView2</h1>
+<h2>Count: <span id="count"></span></h2>
+<button onclick="toast()">吐司</button>
+<button onclick="add()">新增</button>
+<a href="https://m.bilibili.com" about="">哔哩哔哩动画</a>
+<a href="./detail.html" >详情</a>
+<script>
+    let count = localStorage.getItem("count");
+    count = count ? count : 0;
+    document.getElementById('count').innerText = count;
+
+    function toast(){
+        <!--Android.showToast('Hello World!');-->
+        Android.showToast('window.devicePixelRatio: ' + window.devicePixelRatio);
+    }
+
+    function add() {
+        let count = localStorage.getItem("count");
+        count++;
+        document.getElementById('count').innerText = count;
+        localStorage.setItem("count", count);
+    }
+    console.log('Hello World!');
+</script>
+</body>
+</html>
